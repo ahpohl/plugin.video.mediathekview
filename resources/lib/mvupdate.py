@@ -182,6 +182,71 @@ class UpdateApp():
             default='mediathekview',
             help='database name'
         )
+        postgresopts = subparsers.add_parser(
+            'postgres', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        postgresopts.add_argument(
+            '-v', '--verbose',
+            default=0,
+            action='count',
+            help='show progress messages'
+        )
+        postgresforce = postgresopts.add_mutually_exclusive_group()
+        postgresforce.add_argument(
+            '-f', '--force',
+            default=False,
+            action='store_true',
+            help='ignore the minimum interval'
+        )
+        postgresforce.add_argument(
+            '-F', '--full',
+            default=False,
+            action='store_true',
+            help='ignore the minimum interval and force a full update'
+        )
+        postgresopts.add_argument(
+            '-i', '--intervall',
+            default=3600,
+            type=int,
+            action='store',
+            help='minimum interval between updates'
+        )
+        postgresopts.add_argument(
+            '-b', '--updateBatchSize',
+            default=10000,
+            type=int,
+            action='store',
+            help='insert/update batch size'
+        )
+        postgresopts.add_argument(
+            '-H', '--host',
+            dest='host',
+            help='hostname or ip address',
+            default='localhost'
+        )
+        postgresopts.add_argument(
+            '-P', '--port',
+            dest='port',
+            help='connection port',
+            default='3306'
+        )
+        postgresopts.add_argument(
+            '-u', '--user',
+            dest='user',
+            help='connection username',
+            default='mediathekview'
+        )
+        postgresopts.add_argument(
+            '-p', '--password',
+            dest='password',
+            help='connection password',
+            default='mediathekview'
+        )
+        postgresopts.add_argument(
+            '-d', '--database',
+            dest='database',
+            default='mediathekview',
+            help='database name'
+        )
         self.args = parser.parse_args()
         self.verbosity = self.args.verbose
         # do it again to have proper loglevel (verbosity)

@@ -14,10 +14,10 @@ class SettingsCommandline(SettingsInterface):
 
     def __init__(self, args):
         self.__datapath = args.path if args.dbtype == 'sqlite' else './'
-        self.__type = {'sqlite': 0, 'mysql': 1}.get(args.dbtype, 0)
+        self.__type = {'sqlite': 0, 'mysql': 1, 'postgres': 2}.get(args.dbtype, 0)
         if self.__type == 0:
             self.__updnative = args.native
-        elif self.__type == 1:
+        elif (self.__type == 1 or self.__type == 2):
             self.__host = args.host
             self.__port = int(args.port)
             self.__user = args.user
