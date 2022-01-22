@@ -18,6 +18,8 @@ from resources.lib.storeSqliteSetup import StoreSQLiteSetup
 from resources.lib.storeMySqlSetup import StoreMySQLSetup
 from resources.lib.updateFileDownload import UpdateFileDownload
 from resources.lib.updateFileImport import UpdateFileImport
+from resources.lib.storePostgreSql import StorePostgreSQL
+from resources.lib.storePostgreSqlSetup import StorePostgreSQLSetup
 
 # -- Classes ------------------------------------------------
 # pylint: disable=bad-whitespace
@@ -47,6 +49,9 @@ class MediathekViewUpdater(object):
         elif self.settings.getDatabaseType() == 1:
             self.logger.debug('Database driver: External (mysql)')
             self.database = StoreMySQL()
+        elif self.settings.getDatabaseType() == 2:
+            self.logger.debug('Database driver: External (postgres)')
+            self.database = StorePostgreSQL()
         else:
             self.logger.warn('Unknown Database driver selected')
             self.database = None
@@ -87,8 +92,10 @@ class MediathekViewUpdater(object):
             #
             if self.settings.getDatabaseType() == 0:
                 StoreSQLiteSetup(self.database).setupDatabase()
-            else:
+            elif self.settings.getDatabaseType() == 1:
                 StoreMySQLSetup(self.database).setupDatabase()
+            elif self.settings.getDatabaseType() == 2:
+                StorePostgreSQLSetup(self.database).setupDatabase()
             #
             self.database.set_status(pStatus='IDLE', pLastupdate=0, pLastFullUpdate=0, pFilmupdate=0, pVersion='3')
             databaseStatus = self.database.getDatabaseStatus()

@@ -227,7 +227,7 @@ class UpdateApp():
             '-P', '--port',
             dest='port',
             help='connection port',
-            default='3306'
+            default='5432'
         )
         postgresopts.add_argument(
             '-u', '--user',
