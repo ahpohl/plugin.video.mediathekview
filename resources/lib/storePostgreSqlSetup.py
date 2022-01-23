@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 # pylint: disable=too-many-lines,line-too-long
 
 import resources.lib.appContext as appContext
-from psycopg2 import sql,DatabaseError
+import psycopg2
+from psycopg2.sql import SQL
 import sys
 
 class StorePostgreSQLSetup(object):
@@ -17,7 +18,7 @@ class StorePostgreSQLSetup(object):
         self.logger = appContext.MVLOGGER.get_new_logger('StorePostgreSQLSetup')
         self.settings = appContext.MVSETTINGS
         self.conn = dbCon
-        self._setupScript = sql.SQL("""
+        self._setupScript = SQL("""
 -- ----------------------------
 -- DB V2 
 DROP PROCEDURE IF EXISTS ftUpdateStart;
@@ -67,11 +68,12 @@ INSERT INTO status values ('UNINIT',0,0,0,3);
     def setupDatabase(self):
         self.logger.debug('Start DB setup for schema {}', self.settings.getDatabaseSchema())
         try:
-            cursor = self.conn.getConnection().cursor()
+            con = self.conn.getConnection()
+            con.commit()
+            cursor = con.cursor()
             cursor.execute(self._setupScript)
-            self.conn.commit()
             cursor.close()
+            con.commit()
             self.logger.debug('End DB setup')
-        except (Exception, DatabaseError) as error:
+        except (Exception, psycopg2.Error) as error:
             self.logger.error('{}', error)
-        sys.exit()
