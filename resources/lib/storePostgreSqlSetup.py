@@ -68,12 +68,11 @@ INSERT INTO status values ('UNINIT',0,0,0,3);
     def setupDatabase(self):
         self.logger.debug('Start DB setup for schema {}', self.settings.getDatabaseSchema())
         try:
-            con = self.conn.getConnection()
-            con.commit()
-            cursor = con.cursor()
+            self.conn.getConnection().commit()
+            cursor = self.conn.getConnection().cursor()
             cursor.execute(self._setupScript)
             cursor.close()
-            con.commit()
+            self.conn.getConnection().commit()
             self.logger.debug('End DB setup')
         except (Exception, psycopg2.Error) as error:
             self.logger.error('{}', error)

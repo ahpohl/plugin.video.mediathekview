@@ -91,20 +91,22 @@ class StoreQuery(object):
 
     def executemany(self, aStmt, aParams=None):
         """ execute a bulk prepared Stmt """
+        start = time.time()
         cursor = self.getConnection().cursor()
         cursor.executemany(aStmt, aParams)
         rs = cursor.rowcount
-        # self.logger.debug(" rowcount executemany {}" , rs )
+        #self.logger.debug(" rowcount executemany {}" , rs )
         cursor.close()
         self.getConnection().commit()
+        self.logger.debug('execute: {} rows in {} sec', rs, time.time() - start)
         return rs
 
     # # All this just because mysql is not compliant to sql standard
     def getImportPreparedStmtInsert(self):
-            return self.sql_pStmtInsert
+        return self.sql_pStmtInsert
 
     def getImportPreparedStmtUpdate(self):
-            return self.sql_pStmtUpdate
+        return self.sql_pStmtUpdate
 
     #
     def extendedSearch(self, esModel):
