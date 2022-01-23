@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 # pylint: disable=too-many-lines,line-too-long
 
 import resources.lib.appContext as appContext
-
+from psycopg2 import sql
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class StorePostgreSQLSetup(object):
 
@@ -16,7 +17,7 @@ class StorePostgreSQLSetup(object):
         self.logger = appContext.MVLOGGER.get_new_logger('StorePostgreSQLSetup')
         self.settings = appContext.MVSETTINGS
         self.conn = dbCon
-        self._setupSchema = 'CREATE DATABASE IF NOT EXISTS `{}` DEFAULT CHARACTER SET utf8;'.format(self.settings.getDatabaseSchema())
+        self._setupSchema = sql.SQL("CREATE DATABASE {}".format(self.settings.getDatabaseSchema()))
         self._setupScript = """
 -- ----------------------------
 -- DB V2 
@@ -68,20 +69,23 @@ INSERT INTO status values ('UNINIT',0,0,0,3);
 
     def setupDatabase(self):
         self.logger.debug('Start DB setup for schema {}', self.settings.getDatabaseSchema())
+        print('Start DB setup for schema {}'.format(self.settings.getDatabaseSchema()))
         #
         #
         try:
             self.conn.database = self.settings.getDatabaseSchema()
-            rs = self.conn.execute("SHOW DATABASES LIKE '{}'".format(self.settings.getDatabaseSchema()))
-            if len(rs) > 0:
+            cursor = self.conn.getConnection().cursor()
+            cursor.execute(sql.SQL("SELECT datname FROM pg_database where datname = '{}'").format(sql.Identifier(self.settings.getDatabaseSchema())))
+            if cursor.rowcount > 0:
                 self.logger.debug('PostgreSql Schema exists - no action')
+                print('PostgreSql Schema exists - no action')
             else:
                 raise Exception('DB', 'DB')
         except Exception:
             self.logger.debug('PostgreSql Schema does not exists - setup schema')
+            print('PostgreSql Schema does not exists - setup schema')
             cursor = self.conn.getConnection().cursor()
             cursor.execute(self._setupSchema)
-            cursor.execute("USE {}".format(self.settings.getDatabaseSchema()))
             cursor.close()
             self.conn.database = self.settings.getDatabaseSchema()
         #
