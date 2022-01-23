@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 # pylint: disable=too-many-lines,line-too-long
 
 import resources.lib.appContext as appContext
-from psycopg2 import sql
+from psycopg2 import sql,DatabaseError
+import sys
 
 class StorePostgreSQLSetup(object):
 
@@ -16,7 +17,6 @@ class StorePostgreSQLSetup(object):
         self.logger = appContext.MVLOGGER.get_new_logger('StorePostgreSQLSetup')
         self.settings = appContext.MVSETTINGS
         self.conn = dbCon
-        self._setupSchema = sql.SQL("CREATE DATABASE {}".format(self.settings.getDatabaseSchema()))
         self._setupScript = sql.SQL("""
 -- ----------------------------
 -- DB V2 
@@ -66,36 +66,12 @@ INSERT INTO status values ('UNINIT',0,0,0,3);
 
     def setupDatabase(self):
         self.logger.debug('Start DB setup for schema {}', self.settings.getDatabaseSchema())
-        print('Start DB setup for schema {}'.format(self.settings.getDatabaseSchema()))
-        #
-        #
         try:
-            self.conn.database = self.settings.getDatabaseSchema()
-            con = self.conn.getConnection()
-            cursor = con.cursor()
-            cursor.execute("SELECT exists(SELECT datname FROM pg_database WHERE datname = %s)", (self.settings.getDatabaseSchema(),))
-            if cursor.fetchone()[0]:
-                self.logger.debug('PostgreSql Schema exists - no action')
-                print('PostgreSql Schema exists - no action')
-            else:
-                raise Exception('DB', 'DB')
-        except Exception:
-            self.logger.debug('PostgreSql Schema does not exists - setup schema')
-            print('PostgreSql Schema does not exists - setup schema')
-            con = self.conn.getConnection()
-            cursor = con.cursor()
-            cursor.execute(self._setupSchema)
+            cursor = self.conn.getConnection().cursor()
+            cursor.execute(self._setupScript)
+            self.conn.commit()
             cursor.close()
-            self.conn.database = self.settings.getDatabaseSchema()
-        self.conn.exit()
-        self.conn.database = self.settings.getDatabaseSchema()
-        con = self.conn.getConnection()
-        con.autocommit = False
-        cursor = con.cursor()
-        #cursor.execute(self._setupScript)
-        cursor.execute("SELECT current_database()")
-        print(cursor.fetchone()[0])
-        con.commit()
-        cursor.close()
-        self.logger.debug('End DB setup')
-        print('End DB setup')
+            self.logger.debug('End DB setup')
+        except (Exception, DatabaseError) as error:
+            self.logger.error('{}', error)
+        sys.exit()

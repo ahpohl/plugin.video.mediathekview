@@ -17,12 +17,6 @@ from resources.lib.storeQuery import StoreQuery
 class StorePostgreSQL(StoreQuery):
     """
     The local PostgreSQL database class
-    
-    con.query('SET GLOBAL connect_timeout=28800')
-    con.query('SET GLOBAL interactive_timeout=28800')
-    con.query('SET GLOBAL wait_timeout=28800')
-    SET SESSION MAX_EXECUTION_TIME=2000;
-    SET GLOBAL MAX_EXECUTION_TIME=2000;
     """
 
     def __init__(self):
@@ -35,8 +29,8 @@ class StorePostgreSQL(StoreQuery):
     def getConnection(self):
         if self.conn is None:
             self.logger.debug('Using PostgreSQL connector version {}', psycopg2.__version__)
-            print('Using PostgreSQL connector version {}'.format(psycopg2.__version__))
             connectargs = {
+                'dbname': self.settings.getDatabaseSchema(),
                 'host': self.settings.getDatabaseHost(),
                 'port': self.settings.getDatabasePort(),
                 'user': self.settings.getDatabaseUser(),
@@ -44,24 +38,17 @@ class StorePostgreSQL(StoreQuery):
                 'connect_timeout':24 * 60 * 60,
                 'client_encoding':'UTF8'
             }
-            self.conn = psycopg2.connect(**connectargs)
-            self.conn.autocommit = True
             try:
+                self.conn = psycopg2.connect(**connectargs)
                 cursor = self.conn.cursor()
-                cursor.execute('SELECT VERSION()')
+                cursor.execute('SELECT version()')
                 (version,) = cursor.fetchone()
                 self.logger.debug('Connected to server {} running {}', self.settings.getDatabaseHost(), version)
-                print('Connected to server {} running {}'.format(self.settings.getDatabaseHost(), version))
+                cursor.close()
             # pylint: disable=broad-except
-            except Exception:
-                self.logger.debug('Connected to server {}', self.settings.getDatabaseHost())
-            # select database
-            try:
-                self.conn.database = self.settings.getDatabaseSchema()
-            except Exception:
-                pass
-            #
-            cursor.close()
+            except (Exception, psycopg2.DatabaseError) as error:
+                self.logger.error('{}', error)
+                self.logger.warn("""You may need to create the database and/or a user role first: psql -U postgres -c "CREATE DATABASE {}"; psql -U postgres -c "CREATE ROLE {} WITH LOGIN ENCRYPTED PASSWORD '{}'" """, self.settings.getDatabaseSchema(), self.settings.getDatabaseUser(), self.settings.getDatabasePassword())
         return self.conn
 
     def execute(self, aStmt, aParams=None):
