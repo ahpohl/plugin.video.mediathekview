@@ -8,7 +8,6 @@ Copyright 2017-2019, Leo Moll and Dominik Schlösser
 
 import time
 import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 import resources.lib.mvutils as mvutils
 import resources.lib.appContext as appContext
@@ -37,7 +36,6 @@ class StorePostgreSQL(StoreQuery):
         if self.conn is None:
             self.logger.debug('Using PostgreSQL connector version {}', psycopg2.__version__)
             print('Using PostgreSQL connector version {}'.format(psycopg2.__version__))
-            # TODO Kodi 19 - we can update to mysql connector which supports auth_plugin parameter
             connectargs = {
                 'host': self.settings.getDatabaseHost(),
                 'port': self.settings.getDatabasePort(),
@@ -47,7 +45,7 @@ class StorePostgreSQL(StoreQuery):
                 'client_encoding':'UTF8'
             }
             self.conn = psycopg2.connect(**connectargs)
-            self.conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)         
+            self.conn.autocommit = True
             try:
                 cursor = self.conn.cursor()
                 cursor.execute('SELECT VERSION()')

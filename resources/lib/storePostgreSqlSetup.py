@@ -9,7 +9,6 @@ SPDX-License-Identifier: MIT
 
 import resources.lib.appContext as appContext
 from psycopg2 import sql
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class StorePostgreSQLSetup(object):
 
@@ -18,54 +17,52 @@ class StorePostgreSQLSetup(object):
         self.settings = appContext.MVSETTINGS
         self.conn = dbCon
         self._setupSchema = sql.SQL("CREATE DATABASE {}".format(self.settings.getDatabaseSchema()))
-        self._setupScript = """
+        self._setupScript = sql.SQL("""
 -- ----------------------------
 -- DB V2 
-DROP PROCEDURE IF EXISTS `ftUpdateStart`;
-DROP PROCEDURE IF EXISTS `ftUpdateEnd`;
-DROP PROCEDURE IF EXISTS `ftInsertShow`;
-DROP PROCEDURE IF EXISTS `ftInsertChannel`;
-DROP TABLE IF EXISTS `status`;
-DROP TABLE IF EXISTS `show`;
-DROP TABLE IF EXISTS `film`;
-DROP TABLE IF EXISTS `channel`;
+DROP PROCEDURE IF EXISTS ftUpdateStart;
+DROP PROCEDURE IF EXISTS ftUpdateEnd;
+DROP PROCEDURE IF EXISTS ftInsertShow;
+DROP PROCEDURE IF EXISTS ftInsertChannel;
+DROP TABLE IF EXISTS status;
+DROP TABLE IF EXISTS show;
+DROP TABLE IF EXISTS film;
+DROP TABLE IF EXISTS channel;
 -- ----------------------------
 --  Table structure for film
 -- ----------------------------
 DROP TABLE IF EXISTS film;
 CREATE TABLE film (
-    idhash         char(32)        NOT NULL,
-    dtCreated      integer(11)     NOT NULL,
-    touched        smallint(1)     NOT NULL,
-    channel        varchar(32)     NOT NULL,
-    showid         char(8)         NOT NULL,
-    showname       varchar(128)    NOT NULL,
-    title          varchar(128)    NOT NULL,
-    aired          integer(11)     NOT NULL,
-    duration       integer(11)     NOT NULL,
-    description    varchar(1024)   NULL,
-    url_sub        varchar(384)    NULL,
-    url_video      varchar(384)    NULL,
-    url_video_sd   varchar(384)    NULL,
+    idhash         CHAR(32)        NOT NULL,
+    dtCreated      INTEGER         NOT NULL,
+    touched        SMALLINT        NOT NULL,
+    channel        VARCHAR(32)     NOT NULL,
+    showid         CHAR(8)         NOT NULL,
+    showname       VARCHAR(128)    NOT NULL,
+    title          VARCHAR(128)    NOT NULL,
+    aired          INTEGER         NOT NULL,
+    duration       INTEGER         NOT NULL,
+    description    VARCHAR(1024)   NULL,
+    url_sub        VARCHAR(384)    NULL,
+    url_video      VARCHAR(384)    NULL,
+    url_video_sd   VARCHAR(384)    NULL,
     url_video_hd   varchar(384)    NULL
-) ENGINE=InnoDB CHARSET=utf8;
---
-CREATE INDEX idx_idhash ON film (idhash);
+);
 -- ----------------------------
 --  Table structure for status
 -- ----------------------------
 DROP TABLE IF EXISTS status;
 CREATE TABLE status (
-    status          varchar(255)    NOT NULL,
-    lastupdate      int(11)         NOT NULL,
-    lastFullUpdate  int(11)         NOT NULL,
-    filmupdate      int(11)         NOT NULL,
-    version         int(11)         NOT NULL
-) ENGINE=InnoDB;
+    status          VARCHAR(255)    NOT NULL,
+    lastupdate      INTEGER         NOT NULL,
+    lastFullUpdate  INTEGER         NOT NULL,
+    filmupdate      INTEGER         NOT NULL,
+    version         INTEGER         NOT NULL
+);
 -- ----------------
 INSERT INTO status values ('UNINIT',0,0,0,3);
 --
-"""
+""")
 
     def setupDatabase(self):
         self.logger.debug('Start DB setup for schema {}', self.settings.getDatabaseSchema())
@@ -74,9 +71,10 @@ INSERT INTO status values ('UNINIT',0,0,0,3);
         #
         try:
             self.conn.database = self.settings.getDatabaseSchema()
-            cursor = self.conn.getConnection().cursor()
-            cursor.execute(sql.SQL("SELECT datname FROM pg_database where datname = '{}'").format(sql.Identifier(self.settings.getDatabaseSchema())))
-            if cursor.rowcount > 0:
+            con = self.conn.getConnection()
+            cursor = con.cursor()
+            cursor.execute("SELECT exists(SELECT datname FROM pg_database WHERE datname = %s)", (self.settings.getDatabaseSchema(),))
+            if cursor.fetchone()[0]:
                 self.logger.debug('PostgreSql Schema exists - no action')
                 print('PostgreSql Schema exists - no action')
             else:
@@ -84,19 +82,20 @@ INSERT INTO status values ('UNINIT',0,0,0,3);
         except Exception:
             self.logger.debug('PostgreSql Schema does not exists - setup schema')
             print('PostgreSql Schema does not exists - setup schema')
-            cursor = self.conn.getConnection().cursor()
+            con = self.conn.getConnection()
+            cursor = con.cursor()
             cursor.execute(self._setupSchema)
             cursor.close()
             self.conn.database = self.settings.getDatabaseSchema()
-        #
+        self.conn.exit()
+        self.conn.database = self.settings.getDatabaseSchema()
         con = self.conn.getConnection()
+        con.autocommit = False
         cursor = con.cursor()
-        for result in cursor.execute(self._setupScript, multi=True):
-          if result.with_rows:
-            self.logger.debug("Rows produced by statement '{}':".format(result.statement))
-            self.logger.debug(result.fetchall())
-          else:
-            self.logger.debug("Number of rows affected by statement '{}': {}".format(result.statement, result.rowcount))
-        cursor.close()
+        #cursor.execute(self._setupScript)
+        cursor.execute("SELECT current_database()")
+        print(cursor.fetchone()[0])
         con.commit()
+        cursor.close()
         self.logger.debug('End DB setup')
+        print('End DB setup')
