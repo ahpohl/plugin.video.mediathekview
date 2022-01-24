@@ -13,7 +13,7 @@ import resources.lib.mvutils as mvutils
 from resources.lib.storeCache import StoreCache
 from resources.lib.model.film import Film
 import resources.lib.extendedSearchModel as ExtendedSearchModel
-
+from psycopg2.extras import execute_batch
 
 class StoreQuery(object):
 
@@ -73,7 +73,7 @@ class StoreQuery(object):
             cursor.execute(aStmt, aParams)
         rs = cursor.fetchall()
         cursor.close()
-        self.logger.debug('execute: {} rows in {} sec', len(rs), time.time() - start)
+        #self.logger.debug('execute: {} rows in {} sec', len(rs), time.time() - start)
         return rs
 
     def executeUpdate(self, aStmt, aParams):
@@ -84,7 +84,7 @@ class StoreQuery(object):
         else:
             cursor.execute(aStmt, aParams)
         rs = cursor.rowcount
-        # self.logger.debug(" rowcount executeUpdate {}" , rs )
+        #self.logger.debug(" rowcount executeUpdate {}" , rs )
         cursor.close()
         self.getConnection().commit()
         return rs
@@ -93,12 +93,14 @@ class StoreQuery(object):
         """ execute a bulk prepared Stmt """
         start = time.time()
         cursor = self.getConnection().cursor()
-        cursor.executemany(aStmt, aParams)
-        rs = cursor.rowcount
-        #self.logger.debug(" rowcount executemany {}" , rs )
-        cursor.close()
+        if (self.settings.getDatabaseType() == 2):
+            execute_batch(cursor, aStmt, aParams)
+        else:
+            cursor.executemany(aStmt, aParams)
         self.getConnection().commit()
-        self.logger.debug('execute: {} rows in {} sec', rs, time.time() - start)
+        rs = cursor.rowcount
+        cursor.close()
+        #self.logger.debug('execute: {} rows in {} sec', rs, time.time() - start)
         return rs
 
     # # All this just because mysql is not compliant to sql standard
@@ -546,6 +548,7 @@ class StoreQuery(object):
             raise
 
     def import_films(self, filmArray):
+        start = time.time()
         self.logger.debug('import_films')
         #
         pStmtInsert = self.getImportPreparedStmtInsert()
@@ -561,7 +564,7 @@ class StoreQuery(object):
             for f in filmArray:
                 cursor.execute(pStmtUpdate, (f[0],))
                 rs = cursor.rowcount
-                # self.logger.debug('executeUpdate rs {} for {}', rs , f[0] )
+                #self.logger.debug('executeUpdate rs {} for {}', rs , f[0] )
                 if rs == 0:
                     insertArray.append(f)
                     insertCnt += 1
@@ -570,6 +573,7 @@ class StoreQuery(object):
             #
             cursor.close()
             self.executemany(pStmtInsert, insertArray)
+            self.logger.debug('execute: in {} sec', time.time() - start)
             #
             return (insertCnt, updateCnt)
         except Exception as err:

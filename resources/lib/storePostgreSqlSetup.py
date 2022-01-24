@@ -49,6 +49,7 @@ CREATE TABLE film (
     url_video_sd   VARCHAR(384)    NULL,
     url_video_hd   varchar(384)    NULL
 );
+CREATE INDEX idx_idhash ON film (idhash);
 -- ----------------------------
 --  Table structure for status
 -- ----------------------------
