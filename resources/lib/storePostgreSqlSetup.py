@@ -29,6 +29,7 @@ DROP TABLE IF EXISTS status;
 DROP TABLE IF EXISTS show;
 DROP TABLE IF EXISTS film;
 DROP TABLE IF EXISTS channel;
+DROP INDEX IF EXISTS idx_idhash;
 -- ----------------------------
 --  Table structure for film
 -- ----------------------------
