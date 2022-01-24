@@ -163,6 +163,10 @@ msgctxt "#30222"
 msgid "External (mysql)"
 msgstr "Esterna (mysql)"
 
+msgctxt "#30223"
+msgid "External (postgres)"
+msgstr "External (postgres)"
+
 msgctxt "#30231"
 msgid "Database Update Mode"
 msgstr "Metodo di attualizzazione Database"

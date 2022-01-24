@@ -53,6 +53,9 @@ class MediathekViewPlugin(KodiPlugin):
         elif self.settings.getDatabaseType() == 1:
             self.logger.debug('Database driver: External (mysql)')
             self.database = StoreMySQL()
+        elif self.settings.getDatabaseType() == 2:
+            self.logger.debug('Database driver: External (postgres)')
+            self.database = StorePostgreSQL()
         else:
             self.logger.warn('Unknown Database driver selected')
             self.database = None
