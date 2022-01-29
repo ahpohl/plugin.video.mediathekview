@@ -13,7 +13,6 @@ import resources.lib.mvutils as mvutils
 from resources.lib.storeCache import StoreCache
 from resources.lib.model.film import Film
 import resources.lib.extendedSearchModel as ExtendedSearchModel
-from psycopg2.extras import execute_batch
 
 class StoreQuery(object):
 
