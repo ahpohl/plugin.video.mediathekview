@@ -93,10 +93,7 @@ class StoreQuery(object):
         """ execute a bulk prepared Stmt """
         start = time.time()
         cursor = self.getConnection().cursor()
-        if (self.settings.getDatabaseType() == 2):
-            execute_batch(cursor, aStmt, aParams)
-        else:
-            cursor.executemany(aStmt, aParams)
+        cursor.executemany(aStmt, aParams)
         self.getConnection().commit()
         rs = cursor.rowcount
         cursor.close()
@@ -573,7 +570,7 @@ class StoreQuery(object):
             #
             cursor.close()
             self.executemany(pStmtInsert, insertArray)
-            #self.logger.debug('execute: in {} sec', time.time() - start)
+            self.logger.debug('execute: in {} sec', time.time() - start)
             #
             return (insertCnt, updateCnt)
         except Exception as err:

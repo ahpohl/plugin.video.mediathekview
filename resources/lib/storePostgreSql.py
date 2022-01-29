@@ -7,7 +7,8 @@ Copyright 2017-2019, Leo Moll and Dominik Schlösser
 # pylint: disable=too-many-lines,line-too-long
 
 import time
-import psycopg2
+import pg8000.dbapi
+from pg8000.native import DatabaseError
 
 import resources.lib.mvutils as mvutils
 import resources.lib.appContext as appContext
@@ -28,25 +29,23 @@ class StorePostgreSQL(StoreQuery):
 
     def getConnection(self):
         if self.conn is None:
-            self.logger.debug('Using PostgreSQL connector version {}', psycopg2.__version__)
+            self.logger.debug('Using PostgreSQL connector version {}', pg8000.__version__)
             connectargs = {
-                'dbname': self.settings.getDatabaseSchema(),
+                'database': self.settings.getDatabaseSchema(),
                 'host': self.settings.getDatabaseHost(),
                 'port': self.settings.getDatabasePort(),
                 'user': self.settings.getDatabaseUser(),
-                'password': self.settings.getDatabasePassword(),
-                'connect_timeout':24 * 60 * 60,
-                'client_encoding':'UTF8'
+                'password': self.settings.getDatabasePassword()
             }
             try:
-                self.conn = psycopg2.connect(**connectargs)
+                self.conn = pg8000.dbapi.connect(**connectargs)
                 cursor = self.conn.cursor()
                 cursor.execute('SELECT version()')
                 (version,) = cursor.fetchone()
                 self.logger.debug('Connected to server {} running {}', self.settings.getDatabaseHost(), version)
                 cursor.close()
             # pylint: disable=broad-except
-            except (Exception, psycopg2.DatabaseError) as error:
+            except (Exception, DatabaseError) as error:
                 self.logger.error('{}', error)
                 self.logger.warn("""You may need to create the database and/or a user role first: psql -U postgres -c "CREATE DATABASE {}"; psql -U postgres -c "CREATE ROLE {} WITH LOGIN ENCRYPTED PASSWORD '{}'" """, self.settings.getDatabaseSchema(), self.settings.getDatabaseUser(), self.settings.getDatabasePassword())
         return self.conn
