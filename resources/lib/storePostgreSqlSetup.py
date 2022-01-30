@@ -64,6 +64,11 @@ CREATE TABLE status (
 -- ----------------
 INSERT INTO status values ('UNINIT',0,0,0,3);
 --
+CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP()
+RETURNS BIGINT
+LANGUAGE SQL
+IMMUTABLE STRICT
+AS 'SELECT EXTRACT(EPOCH FROM now())::bigint;';
 """
 
     def setupDatabase(self):
