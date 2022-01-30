@@ -21,6 +21,7 @@ class StorePostgreSQLSetup(object):
 -- ----------------------------
 -- DB V2 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
+DROP FUNCTION IF EXISTS unix_timestamp();
 DROP PROCEDURE IF EXISTS ftUpdateStart;
 DROP PROCEDURE IF EXISTS ftUpdateEnd;
 DROP PROCEDURE IF EXISTS ftInsertShow;
@@ -67,7 +68,7 @@ CREATE TABLE status (
 -- ----------------
 INSERT INTO status values ('UNINIT',0,0,0,3);
 --
-CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP()
+CREATE OR REPLACE FUNCTION unix_timestamp()
 RETURNS bigint AS $$
 BEGIN
   RETURN extract(epoch FROM now())::bigint;
