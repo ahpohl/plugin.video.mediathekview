@@ -348,6 +348,11 @@ class ExtendedSearchModel(object):
 
     #
     def generateShowTitleDescription(self):
+        op = ""
+        if self.settings.getDatabaseType() == 2:
+            op = "ILIKE"
+        else:
+            op = "LIKE"
         sql = ""
         params = []
         if (len(self.getShow()) > 0 and not(self.isExactMatchForShow())) or len(self.getTitle()) > 0 or len(self.getDescription()) > 0:
@@ -356,19 +361,19 @@ class ExtendedSearchModel(object):
                 for conditionString in self.getShow():
                     exp = '%' + conditionString + '%'
                     params.append(exp)
-                    sql += ' showname like ? or'
+                    sql += ' showname ' + op + ' ? or'
             #
             if (len(self.getTitle()) > 0):
                 for conditionString in self.getTitle():
                     exp = '%' + conditionString + '%'
                     params.append(exp)
-                    sql += ' title like ? or'
+                    sql += ' title ' + op + ' ? or'
             #
             if (len(self.getDescription()) > 0):
                 for conditionString in self.getDescription():
                     exp = '%' + conditionString + '%'
                     params.append(exp)
-                    sql += ' description like ? or'
+                    sql += ' description ' + op + ' ? or'
             #
             if sql[-2:] == 'or':
                 sql = sql[0:(len(sql) - 2)]
