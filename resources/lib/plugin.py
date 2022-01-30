@@ -23,6 +23,7 @@ from resources.lib.kodi.kodiaddon import KodiPlugin
 
 from resources.lib.storeMySql import StoreMySQL
 from resources.lib.storeSqlite import StoreSQLite
+from resources.lib.storePostgreSql import StorePostgreSQL
 from resources.lib.notifierKodi import NotifierKodi
 from resources.lib.downloader import Downloader
 from resources.lib.searches import RecentSearches
