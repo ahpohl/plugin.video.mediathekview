@@ -68,11 +68,12 @@ CREATE TABLE status (
 -- ----------------
 INSERT INTO status values ('UNINIT',0,0,0,3);
 --
-CREATE OR REPLACE FUNCTION unix_timestamp()
+CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP()
 RETURNS bigint AS $$
 BEGIN
   RETURN extract(epoch FROM now())::bigint;
-END;
+END
+$$ LANGUAGE plpgsql;
 """
 
     def setupDatabase(self):
