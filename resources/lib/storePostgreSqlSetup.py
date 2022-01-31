@@ -21,6 +21,7 @@ class StorePostgreSQLSetup(object):
         self._setupScript = SQL("""
 -- ----------------------------
 -- DB V2 
+DROP FUNCTION IF EXISTS unix_timestamp();
 DROP PROCEDURE IF EXISTS ftUpdateStart;
 DROP PROCEDURE IF EXISTS ftUpdateEnd;
 DROP PROCEDURE IF EXISTS ftInsertShow;
@@ -30,33 +31,36 @@ DROP TABLE IF EXISTS show;
 DROP TABLE IF EXISTS film;
 DROP TABLE IF EXISTS channel;
 DROP INDEX IF EXISTS idx_idhash;
+DROP INDEX IF EXISTS idx_showname;
+DROP INDEX IF EXISTS idx_title;
 -- ----------------------------
 --  Table structure for film
 -- ----------------------------
-DROP TABLE IF EXISTS film;
 CREATE TABLE film (
     idhash         CHAR(32)        NOT NULL,
     dtCreated      INTEGER         NOT NULL,
     touched        SMALLINT        NOT NULL,
-    channel        VARCHAR(32)     NOT NULL,
+    channel        VARCHAR         NOT NULL,
     showid         CHAR(8)         NOT NULL,
-    showname       VARCHAR(128)    NOT NULL,
-    title          VARCHAR(128)    NOT NULL,
+    showname       VARCHAR         NOT NULL,
+    title          VARCHAR         NOT NULL,
     aired          INTEGER         NOT NULL,
     duration       INTEGER         NOT NULL,
-    description    VARCHAR(1024)   NULL,
-    url_sub        VARCHAR(384)    NULL,
-    url_video      VARCHAR(384)    NULL,
-    url_video_sd   VARCHAR(384)    NULL,
-    url_video_hd   varchar(384)    NULL
+    description    VARCHAR         NULL,
+    url_sub        VARCHAR         NULL,
+    url_video      VARCHAR         NULL,
+    url_video_sd   VARCHAR         NULL,
+    url_video_hd   VARCHAR         NULL
 );
 CREATE INDEX idx_idhash ON film (idhash);
+--CREATE EXTENSION IF NOT EXISTS pg_trgm;
+--CREATE INDEX idx_showname ON film USING gin (showname gin_trgm_ops);
+--CREATE INDEX idx_title ON film USING gin (title gin_trgm_ops);
 -- ----------------------------
 --  Table structure for status
 -- ----------------------------
-DROP TABLE IF EXISTS status;
 CREATE TABLE status (
-    status          VARCHAR(255)    NOT NULL,
+    status          VARCHAR         NOT NULL,
     lastupdate      INTEGER         NOT NULL,
     lastFullUpdate  INTEGER         NOT NULL,
     filmupdate      INTEGER         NOT NULL,
@@ -65,6 +69,12 @@ CREATE TABLE status (
 -- ----------------
 INSERT INTO status values ('UNINIT',0,0,0,3);
 --
+CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP()
+RETURNS bigint AS $$
+BEGIN
+  RETURN extract(epoch FROM now())::bigint;
+END
+$$ LANGUAGE plpgsql;
 """)
 
     def setupDatabase(self):
