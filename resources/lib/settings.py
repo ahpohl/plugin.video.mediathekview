@@ -47,11 +47,18 @@ class Settings(object):
         self.updateCheckInterval = int(addon.getSetting('updateCheckInterval'))
         # database
         self.type = int(addon.getSetting('dbtype'))
-        self.host = addon.getSetting('dbhost')
-        self.port = int(addon.getSetting('dbport'))
-        self.user = addon.getSetting('dbuser')
-        self.password = addon.getSetting('dbpass')
-        self.database = addon.getSetting('dbdata')
+        if self.type == 2:
+            self.host = addon.getSetting('pghost')
+            self.port = int(addon.getSetting('pgport'))
+            self.user = addon.getSetting('pguser')
+            self.password = addon.getSetting('pgpass')
+            self.database = addon.getSetting('pgdata')
+        else:
+            self.host = addon.getSetting('dbhost')
+            self.port = int(addon.getSetting('dbport'))
+            self.user = addon.getSetting('dbuser')
+            self.password = addon.getSetting('dbpass')
+            self.database = addon.getSetting('dbdata')
         self.updnative = addon.getSetting('updnative') == 'true'
         self.updmode = int(addon.getSetting('updmode'))
         self.caching = addon.getSetting('caching') == 'true'
