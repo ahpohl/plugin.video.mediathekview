@@ -333,6 +333,11 @@ class ExtendedSearchModel(object):
 
     #
     def generateExclude(self):
+        op = ""
+        if self.settings.getDatabaseType() == 2:
+            op = "!~~*"
+        else:
+            op = "not like"
         sql = ""
         params = []
         if (len(self.getExcludeTitle()) > 0):
@@ -341,7 +346,7 @@ class ExtendedSearchModel(object):
                 exp = '%' + conditionString + '%'
                 params.append(exp)
                 params.append(exp)
-                sql += ' title not like ? and showname not like ? and'
+                sql += ' title ' + op + ' ? and showname ' + op + ' ? and'
             sql = sql[0:(len(sql) - 3)]
             sql += ")"
         return (sql, params)
@@ -350,9 +355,9 @@ class ExtendedSearchModel(object):
     def generateShowTitleDescription(self):
         op = ""
         if self.settings.getDatabaseType() == 2:
-            op = "ILIKE"
+            op = "~~*"
         else:
-            op = "LIKE"
+            op = "like"
         sql = ""
         params = []
         if (len(self.getShow()) > 0 and not(self.isExactMatchForShow())) or len(self.getTitle()) > 0 or len(self.getDescription()) > 0:
