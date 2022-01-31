@@ -49,7 +49,7 @@ CREATE TABLE film (
     url_sub        VARCHAR         NULL,
     url_video      VARCHAR         NULL,
     url_video_sd   VARCHAR         NULL,
-    url_video_hd   varchar         NULL
+    url_video_hd   VARCHAR         NULL
 );
 CREATE INDEX idx_idhash ON film (idhash);
 --CREATE EXTENSION IF NOT EXISTS pg_trgm;
@@ -59,7 +59,7 @@ CREATE INDEX idx_idhash ON film (idhash);
 --  Table structure for status
 -- ----------------------------
 CREATE TABLE status (
-    status          VARCHAR(255)    NOT NULL,
+    status          VARCHAR         NOT NULL,
     lastupdate      INTEGER         NOT NULL,
     lastFullUpdate  INTEGER         NOT NULL,
     filmupdate      INTEGER         NOT NULL,
