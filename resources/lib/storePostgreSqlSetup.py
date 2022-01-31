@@ -20,7 +20,6 @@ class StorePostgreSQLSetup(object):
         self._setupScript = """
 -- ----------------------------
 -- DB V2 
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
 DROP FUNCTION IF EXISTS unix_timestamp();
 DROP PROCEDURE IF EXISTS ftUpdateStart;
 DROP PROCEDURE IF EXISTS ftUpdateEnd;
@@ -53,8 +52,9 @@ CREATE TABLE film (
     url_video_hd   varchar         NULL
 );
 CREATE INDEX idx_idhash ON film (idhash);
-CREATE INDEX idx_showname ON film USING gin (showname gin_trgm_ops);
-CREATE INDEX idx_title ON film USING gin (title gin_trgm_ops);
+--CREATE EXTENSION IF NOT EXISTS pg_trgm;
+--CREATE INDEX idx_showname ON film USING gin (showname gin_trgm_ops);
+--CREATE INDEX idx_title ON film USING gin (title gin_trgm_ops);
 -- ----------------------------
 --  Table structure for status
 -- ----------------------------
