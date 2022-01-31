@@ -1,0 +1,10 @@
+[Unit]
+Description=MediathekView Database Update
+After=network.target
+
+[Service]
+Environment=MVPATH=/home/alex/git
+ExecStart=${MVPATH}/plugin.video.mediathekview/mvupdate3 postgres
+
+[Install]
+WantedBy=multi-user.target
