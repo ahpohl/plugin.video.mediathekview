@@ -98,11 +98,18 @@ class Settings(object):
         addon = xbmcaddon.Addon()
         # check if the db configration has changed
         dbchanged = self.type != int(addon.getSetting('dbtype'))
-        dbchanged = dbchanged or self.host != addon.getSetting('dbhost')
-        dbchanged = dbchanged or self.port != int(addon.getSetting('dbport'))
-        dbchanged = dbchanged or self.user != addon.getSetting('dbuser')
-        dbchanged = dbchanged or self.password != addon.getSetting('dbpass')
-        dbchanged = dbchanged or self.database != addon.getSetting('dbdata')
+        if int(addon.getSetting('dbtype')) == 2:
+            dbchanged = dbchanged or self.host != addon.getSetting('pghost')
+            dbchanged = dbchanged or self.port != int(addon.getSetting('pgport'))
+            dbchanged = dbchanged or self.user != addon.getSetting('pguser')
+            dbchanged = dbchanged or self.password != addon.getSetting('pgpass')
+            dbchanged = dbchanged or self.database != addon.getSetting('pgdata')
+        else:
+            dbchanged = dbchanged or self.host != addon.getSetting('dbhost')
+            dbchanged = dbchanged or self.port != int(addon.getSetting('dbport'))
+            dbchanged = dbchanged or self.user != addon.getSetting('dbuser')
+            dbchanged = dbchanged or self.password != addon.getSetting('dbpass')
+            dbchanged = dbchanged or self.database != addon.getSetting('dbdata')
         # reload configuration
         self.load()
         # return change status
