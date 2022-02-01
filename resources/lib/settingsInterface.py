@@ -67,7 +67,7 @@ class SettingsInterface(object):
         return 'localhost'
 
     def getDatabasePort(self):
-        return 3306
+        return 5432
 
     def getDatabaseUser(self):
         return 'mediathekview'

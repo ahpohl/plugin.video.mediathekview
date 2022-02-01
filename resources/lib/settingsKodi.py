@@ -112,48 +112,23 @@ class SettingsKodi(SettingsInterface):
 
     # self.host
     def getDatabaseHost(self):
-        host = ''
-        if self.getDatabaseType == 2:
-            host = self._addonClass.getSetting('pghost')
-        else:
-            host = self._addonClass.getSetting('dbhost')
-        return host
+        return self._addonClass.getSetting('dbhost')
 
     # self.port
     def getDatabasePort(self):
-        port = 0
-        if self.getDatabaseType == 2:
-            port = int(self._addonClass.getSetting('pgport'))
-        else:
-            port = int(self._addonClass.getSetting('dbport'))
-        return port
+        return int(self._addonClass.getSetting('dbport'))
 
     # self.user
     def getDatabaseUser(self):
-        user = ''
-        if self.getDatabaseType == 2:
-            user = self._addonClass.getSetting('pguser')
-        else:
-            user = self._addonClass.getSetting('dbuser')
-        return user
+        return self._addonClass.getSetting('dbuser')
 
     # self.password
     def getDatabasePassword(self):
-        pw = ''
-        if self.getDatabaseType == 2:
-            pw = self._addonClass.getSetting('pgpass')
-        else:
-            self._addonClass.getSetting('dbpass')
-        return pw
+        return self._addonClass.getSetting('dbpass')
 
     # self.database
     def getDatabaseSchema(self):
-        db = ''
-        if self.getDatabaseType == 2:
-            db = self._addonClass.getSetting('pgdata')
-        else:
-            db = self._addonClass.getSetting('dbdata')
-        return db
+        return self._addonClass.getSetting('dbdata')
 
     # self.updmode
     def getDatabaseUpateMode(self):

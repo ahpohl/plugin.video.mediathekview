@@ -11,17 +11,12 @@
 	</category>
 	<category label="30002">
 		<setting id="dbtype"			type="enum"		label="30210"	default="0"	lvalues="30221|30222|30223"				/>
-		<setting id="dbhost"			type="text"		label="30211"	default="localhost"			visible="eq(-1,1)"	    />
-		<setting id="dbport"			type="number"	label="30212"	default="3306"				visible="eq(-2,1)"	    />
-		<setting id="dbuser"			type="text"		label="30213"	default="mediathekview"		visible="eq(-3,1)"	    />
-		<setting id="dbpass"			type="text"		label="30214"	default=""	option="hidden"	visible="eq(-4,1)"	    />
-		<setting id="dbdata"			type="text"		label="30215"	default="mediathekview"		visible="eq(-5,1)"	    />
-	    <setting id="pghost"            type="text"     label="30211"   default="localhost"         visible="eq(-6,2)"      />
-        <setting id="pgport"            type="number"   label="30212"   default="5432"              visible="eq(-7,2)"      />
-        <setting id="pguser"            type="text"     label="30213"   default="mediathekview"     visible="eq(-8,2)"      />
-        <setting id="pgpass"            type="text"     label="30214"   default=""  option="hidden" visible="eq(-9,2)"      />
-        <setting id="pgdata"            type="text"     label="30215"   default="mediathekview"     visible="eq(-10,2)"     />
-        <setting id="updnative"			type="bool"		label="30233"	default="true"				visible="eq(-11,0)"		/>
+		<setting id="dbhost"			type="text"		label="30211"	default="localhost"			visible="eq(-1,1)|eq(-1,2)"	    />
+		<setting id="dbport"			type="number"	label="30212"	default="5432"				visible="eq(-2,1)|eq(-2,2)"	    />
+		<setting id="dbuser"			type="text"		label="30213"	default="mediathekview"		visible="eq(-3,1)|eq(-3,2)"	    />
+		<setting id="dbpass"			type="text"		label="30214"	default=""	option="hidden"	visible="eq(-4,1)|eq(-4,2)"	    />
+		<setting id="dbdata"			type="text"		label="30215"	default="mediathekview"		visible="eq(-5,1)|eq(-5,2)"	    />
+        <setting id="updnative"			type="bool"		label="30233"	default="true"				visible="eq(-6,0))"		/>
 		<setting id="updmode"			type="enum"		label="30231"	default="3"	lvalues="30241|30242|30243|30244|30245"	/>
 		<setting id="updinterval"		type="slider"	label="30232"	default="2"	range="1,24"	visible="gt(-1,2)"		/>
 		<setting id="updateBatchSize"   type="slider"   label="30235"   default="10000" range="1000,100000"                 />

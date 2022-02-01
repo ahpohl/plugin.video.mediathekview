@@ -47,18 +47,11 @@ class Settings(object):
         self.updateCheckInterval = int(addon.getSetting('updateCheckInterval'))
         # database
         self.type = int(addon.getSetting('dbtype'))
-        if self.type == 2:
-            self.host = addon.getSetting('pghost')
-            self.port = int(addon.getSetting('pgport'))
-            self.user = addon.getSetting('pguser')
-            self.password = addon.getSetting('pgpass')
-            self.database = addon.getSetting('pgdata')
-        else:
-            self.host = addon.getSetting('dbhost')
-            self.port = int(addon.getSetting('dbport'))
-            self.user = addon.getSetting('dbuser')
-            self.password = addon.getSetting('dbpass')
-            self.database = addon.getSetting('dbdata')
+        self.host = addon.getSetting('dbhost')
+        self.port = int(addon.getSetting('dbport'))
+        self.user = addon.getSetting('dbuser')
+        self.password = addon.getSetting('dbpass')
+        self.database = addon.getSetting('dbdata')
         self.updnative = addon.getSetting('updnative') == 'true'
         self.updmode = int(addon.getSetting('updmode'))
         self.caching = addon.getSetting('caching') == 'true'
@@ -98,18 +91,11 @@ class Settings(object):
         addon = xbmcaddon.Addon()
         # check if the db configration has changed
         dbchanged = self.type != int(addon.getSetting('dbtype'))
-        if int(addon.getSetting('dbtype')) == 2:
-            dbchanged = dbchanged or self.host != addon.getSetting('pghost')
-            dbchanged = dbchanged or self.port != int(addon.getSetting('pgport'))
-            dbchanged = dbchanged or self.user != addon.getSetting('pguser')
-            dbchanged = dbchanged or self.password != addon.getSetting('pgpass')
-            dbchanged = dbchanged or self.database != addon.getSetting('pgdata')
-        else:
-            dbchanged = dbchanged or self.host != addon.getSetting('dbhost')
-            dbchanged = dbchanged or self.port != int(addon.getSetting('dbport'))
-            dbchanged = dbchanged or self.user != addon.getSetting('dbuser')
-            dbchanged = dbchanged or self.password != addon.getSetting('dbpass')
-            dbchanged = dbchanged or self.database != addon.getSetting('dbdata')
+        dbchanged = dbchanged or self.host != addon.getSetting('dbhost')
+        dbchanged = dbchanged or self.port != int(addon.getSetting('dbport'))
+        dbchanged = dbchanged or self.user != addon.getSetting('dbuser')
+        dbchanged = dbchanged or self.password != addon.getSetting('dbpass')
+        dbchanged = dbchanged or self.database != addon.getSetting('dbdata')
         # reload configuration
         self.load()
         # return change status
