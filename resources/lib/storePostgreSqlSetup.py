@@ -32,6 +32,7 @@ DROP TABLE IF EXISTS channel;
 DROP INDEX IF EXISTS idx_idhash;
 DROP INDEX IF EXISTS idx_showname;
 DROP INDEX IF EXISTS idx_title;
+DROP INDEX IF EXISTS idx_description;
 -- ----------------------------
 --  Table structure for film
 -- ----------------------------
@@ -52,9 +53,10 @@ CREATE TABLE film (
     url_video_hd   VARCHAR         NULL
 );
 CREATE INDEX idx_idhash ON film (idhash);
---CREATE EXTENSION IF NOT EXISTS pg_trgm;
---CREATE INDEX idx_showname ON film USING gin (showname gin_trgm_ops);
---CREATE INDEX idx_title ON film USING gin (title gin_trgm_ops);
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX idx_showname ON film USING gin (showname gin_trgm_ops);
+CREATE INDEX idx_title ON film USING gin (title gin_trgm_ops);
+CREATE INDEX idx_description ON film USING gin (description gin_trgm_ops);
 -- ----------------------------
 --  Table structure for status
 -- ----------------------------
