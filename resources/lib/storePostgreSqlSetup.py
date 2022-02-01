@@ -33,6 +33,7 @@ DROP INDEX IF EXISTS idx_idhash;
 DROP INDEX IF EXISTS idx_showname;
 DROP INDEX IF EXISTS idx_title;
 DROP INDEX IF EXISTS idx_description;
+CREATE EXTENSION IF NOT EXISTS citext;
 -- ----------------------------
 --  Table structure for film
 -- ----------------------------
@@ -42,11 +43,11 @@ CREATE TABLE film (
     touched        SMALLINT        NOT NULL,
     channel        VARCHAR         NOT NULL,
     showid         CHAR(8)         NOT NULL,
-    showname       VARCHAR         NOT NULL,
-    title          VARCHAR         NOT NULL,
+    showname       CITEXT          NOT NULL,
+    title          CITEXT          NOT NULL,
     aired          INTEGER         NOT NULL,
     duration       INTEGER         NOT NULL,
-    description    VARCHAR         NULL,
+    description    CITEXT          NULL,
     url_sub        VARCHAR         NULL,
     url_video      VARCHAR         NULL,
     url_video_sd   VARCHAR         NULL,

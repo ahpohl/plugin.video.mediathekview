@@ -333,11 +333,6 @@ class ExtendedSearchModel(object):
 
     #
     def generateExclude(self):
-        op = ""
-        if self.settings.getDatabaseType() == 2:
-            op = "!~~*"
-        else:
-            op = "not like"
         sql = ""
         params = []
         if (len(self.getExcludeTitle()) > 0):
@@ -346,18 +341,13 @@ class ExtendedSearchModel(object):
                 exp = '%' + conditionString + '%'
                 params.append(exp)
                 params.append(exp)
-                sql += ' title ' + op + ' ? and showname ' + op + ' ? and'
+                sql += ' title not like ? and showname not like ? and'
             sql = sql[0:(len(sql) - 3)]
             sql += ")"
         return (sql, params)
 
     #
     def generateShowTitleDescription(self):
-        op = ""
-        if self.settings.getDatabaseType() == 2:
-            op = "~~*"
-        else:
-            op = "like"
         sql = ""
         params = []
         if (len(self.getShow()) > 0 and not(self.isExactMatchForShow())) or len(self.getTitle()) > 0 or len(self.getDescription()) > 0:
@@ -366,19 +356,19 @@ class ExtendedSearchModel(object):
                 for conditionString in self.getShow():
                     exp = '%' + conditionString + '%'
                     params.append(exp)
-                    sql += ' showname ' + op + ' ? or'
+                    sql += ' showname like ? or'
             #
             if (len(self.getTitle()) > 0):
                 for conditionString in self.getTitle():
                     exp = '%' + conditionString + '%'
                     params.append(exp)
-                    sql += ' title ' + op + ' ? or'
+                    sql += ' title like ? or'
             #
             if (len(self.getDescription()) > 0):
                 for conditionString in self.getDescription():
                     exp = '%' + conditionString + '%'
                     params.append(exp)
-                    sql += ' description ' + op + ' ? or'
+                    sql += ' description like ? or'
             #
             if sql[-2:] == 'or':
                 sql = sql[0:(len(sql) - 2)]
